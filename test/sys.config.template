@@ -1,0 +1,8 @@
+{app1, [{key1, {'Dynamic', key1, value}}]}.
+
+
+{app2, [{key2, {'Dynamic', key2}},
+        {keyblabla, this_is_not_dynamic},
+        {key4, [list1, list2, {'Dynamic', key2}]},
+        {key5, {t1, t2, {'Dynamic', key3}}}
+]}.

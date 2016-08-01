@@ -1,0 +1,6 @@
+{env1, [{key2, value2},
+        {key3, [list]}]}.
+
+{env2, [{key1, "different value for key1"},
+        {key2, value2_env2},
+        {key3, [list, for, key3]}]}.
