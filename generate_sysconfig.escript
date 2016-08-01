@@ -6,7 +6,7 @@
 main([Environment, EnvsFN, TemplateFN, OutputFN]) ->
     Template = consult_template(TemplateFN),
     DynamicTerms = get_dynamic_terms(Environment, EnvsFN),    
-    SysConfig = traverse_and_insert(Template, DynamicTerms),
+    [SysConfig] = traverse_and_insert(Template, DynamicTerms),
     io:format("Following config was generated:~n~p~n", [SysConfig]),
     file:write_file(OutputFN, io_lib:format("~tp.~n", [SysConfig])),
     init:stop(1);
