@@ -48,6 +48,24 @@ traverse_and_insert({'Dynamic', DKey}, Dynamics) ->
     end;
 traverse_and_insert({'Dynamic', DKey, Default}, Dynamics) ->
     proplists:get_value(DKey, Dynamics, Default);
+traverse_and_insert({'Dynamic-File', DFile, DKey}, Dynamics) ->
+    case proplists:get_value(DFile, Dynamics) of
+        undefined ->
+            throw({notfound_in_env, DFile});
+        FileName ->
+            case file:consult(FileName) of
+                {error, Error} ->
+                    io:format("ERROR: ~p while reading file (~s)~n", [Error, FileName]),
+                    init:stop(1);
+                {ok, DFileContent} ->
+                    case proplists:get_value(DKey, DFileContent) of
+                        undefined ->
+                            throw({not_found_in_file, FileName, DKey});
+                        Value ->
+                            Value
+                    end
+            end
+    end;
 traverse_and_insert(List, Dynamics) when is_list(List) ->
     lists:map(fun(E) -> traverse_and_insert(E, Dynamics) end, List);
 traverse_and_insert(Tuple, Dynamics) when is_tuple(Tuple) ->
