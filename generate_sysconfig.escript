@@ -12,13 +12,13 @@ main([Environment, EnvsFN, TemplateFN, OutputFN]) ->
     init:stop(1);
 main(_) ->
     usage(),
-    init:stop(1).
+    halt(1).
 
 consult_template(TemplateFN) ->
     case file:consult(TemplateFN) of
         {error, Error} ->
             io:format("ERROR: ~p while reading template (~s)~n", [Error, TemplateFN]),
-            init:stop(1);
+            halt(1);
         {ok, T} ->
             T
     end.
@@ -27,13 +27,13 @@ get_dynamic_terms(Env, EnvsFN) ->
     case file:consult(EnvsFN) of
         {error, Error} ->
             io:format("ERROR: ~p while reading environments file (~s)~n", [Error, EnvsFN]),
-            init:stop(1);
+            halt(1);
         {ok, EnvironmentTerms} ->
             case proplists:get_value(list_to_atom(Env), EnvironmentTerms) of
                 undefined ->
                     io:format("ERROR: Environment ~p wasn't found in file ~p~n",
                               [Env, EnvsFN]),
-                    init:stop(1); %% FIXME maybe
+                    halt(1);
                 Dynamics ->
                     Dynamics
             end
@@ -56,7 +56,7 @@ traverse_and_insert({'Dynamic-File', DFile, DKey}, Dynamics) ->
             case file:consult(FileName) of
                 {error, Error} ->
                     io:format("ERROR: ~p while reading file (~s)~n", [Error, FileName]),
-                    init:stop(1);
+                    halt(1);
                 {ok, DFileContent} ->
                     case proplists:get_value(DKey, DFileContent) of
                         undefined ->

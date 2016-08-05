@@ -24,13 +24,13 @@ main([EnvsFN, TemplateFN, OutputPath]) ->
     init:stop(1);
 main(_) ->
     usage(),
-    init:stop(1).
+    halt(1).
 
 chk_consult_file(FN) ->
     case file:consult(FN) of
         {error, Error} ->
             io:format("ERROR: ~p while reading file (~s)~n", [Error, FN]),
-            init:stop(1);
+            halt(1);
         {ok, T} ->
             T
     end.
@@ -53,7 +53,7 @@ do_try_make_dir(DirName) ->
             DirName;
         {error, Reason} ->
             io:format("Unexpected error (~p) while creating dir:~p~n", [DirName, Reason]),
-            exit(1) %% FIXME: probably should exit with error
+            halt(1)
     end.
 
 solve_single_config(Environment, DynamicTerms, Template) ->
@@ -65,13 +65,13 @@ get_dynamic_terms(Env, EnvsFN) ->
     case file:consult(EnvsFN) of
         {error, Error} ->
             io:format("ERROR: ~p while reading environments file (~s)~n", [Error, EnvsFN]),
-            init:stop(1);
+            halt(1);
         {ok, EnvironmentTerms} ->
             case proplists:get_value(list_to_atom(Env), EnvironmentTerms) of
                 undefined ->
                     io:format("ERROR: Environment ~p wasn't found in file ~p~n",
                               [Env, EnvsFN]),
-                    init:stop(1); %% FIXME maybe
+                    halt(1);
                 Dynamics ->
                     Dynamics
             end
@@ -95,7 +95,7 @@ traverse_and_insert({'Dynamic-File', DFile, DKey}, Dynamics) ->
             case file:consult(FileName) of
                 {error, Error} ->
                     io:format("ERROR: ~p while reading file (~s)~n", [Error, FileName]),
-                    init:stop(1);
+                    halt(1);
                 {ok, DFileContent} ->
                     case proplists:get_value(DKey, DFileContent) of
                         undefined ->
